@@ -1,0 +1,63 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="128dp"
+    android:height="128dp"
+    android:viewportWidth="128"
+    android:viewportHeight="128">
+
+    <!-- Ambient Shadow/Background Ring -->
+    <path
+        android:pathData="M 64,8 C 33.1,8 8,33.1 8,64 C 8,94.9 33.1,120 64,120 C 94.9,120 120,94.9 120,64 C 120,33.1 94.9,8 64,8 Z"
+        android:fillColor="#0D1E3D" />
+
+    <!-- Inner Circle Background (Slate Dark Theme) -->
+    <path
+        android:pathData="M 64,12 C 35.3,12 12,35.3 12,64 C 12,92.7 35.3,116 64,116 C 92.7,116 116,92.7 116,64 C 116,35.3 92.7,12 64,12 Z"
+        android:fillColor="#1E293B" />
+
+    <!-- Decorative Grid Accent (Intel/Tech Vibe) -->
+    <path
+        android:pathData="M 24,64 L 104,64"
+        android:strokeWidth="1"
+        android:strokeColor="#334155" />
+    <path
+        android:pathData="M 64,24 L 64,104"
+        android:strokeWidth="1"
+        android:strokeColor="#334155" />
+
+    <!-- Overlapping Account Cards (Sleek Emerald Card) -->
+    <path
+        android:pathData="M 38,48 L 82,48 C 85.3,48 88,50.7 88,54 L 88,78 C 88,81.3 85.3,84 82,84 L 38,84 C 34.7,84 32,81.3 32,78 L 32,54 C 32,50.7 34.7,48 38,48 Z"
+        android:fillColor="#10B981" />
+
+    <!-- Premium Offset Card to signify Multiple Accounts -->
+    <path
+        android:pathData="M 46,58 L 90,58 C 93.3,58 96,60.7 96,64 L 96,88 C 96,91.3 93.3,94 90,94 L 46,94 C 42.7,94 40,91.3 40,88 L 40,64 C 40,60.7 42.7,58 46,58 Z"
+        android:fillColor="#065F46" />
+
+    <!-- Card Gold Chip Highlight -->
+    <path
+        android:pathData="M 46,68 L 54,68 C 55.1,68 56,68.9 56,70 L 56,76 C 56,77.1 55.1,78 54,78 L 46,78 C 44.9,78 44,77.1 44,76 L 44,70 C 44,68.9 44.9,68 46,68 Z"
+        android:fillColor="#FBBF24" />
+
+    <!-- Rising Gold Trend Arch -->
+    <path
+        android:pathData="M 24,96 C 44,76 74,48 104,36"
+        android:strokeWidth="6"
+        android:strokeLineCap="round"
+        android:strokeColor="#F59E0B" />
+
+    <!-- Trend Arrow Tip (Crimson/Coral Accent) -->
+    <path
+        android:pathData="M 94,36 L 106,34 L 104,46 Z"
+        android:fillColor="#EF4444" />
+
+    <!-- Sparkle Stars for financial prosperity -->
+    <path
+        android:pathData="M 100,60 L 102,65 L 107,67 L 102,69 L 100,74 L 98,69 L 93,67 L 98,65 Z"
+        android:fillColor="#FBBF24" />
+
+    <path
+        android:pathData="M 28,40 L 29,42.5 L 31.5,43 L 29,43.5 L 28,46 L 27,43.5 L 24.5,43 L 27,42.5 Z"
+        android:fillColor="#60A5FA" />
+
+</vector>
