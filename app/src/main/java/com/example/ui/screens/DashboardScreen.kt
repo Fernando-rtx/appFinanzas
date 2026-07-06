@@ -71,10 +71,20 @@ fun DashboardScreen(viewModel: MainViewModel) {
             .filter { it.isExpense }
             .groupBy { it.categoryId }
             .map { (catId, txns) ->
-                val catName = allCategories.find { it.id == catId }?.name ?: stringResource(R.string.uncategorized)
+                val catName = allCategories.find { it.id == catId }?.name ?: ""
                 catName to txns.sumOf { it.amount }
             }
             .sortedByDescending { it.second }
+    }
+
+    // Nombres de categoría resueltos en contexto @Composable (no dentro de remember)
+    val categoryNames = remember { mutableMapOf<Int?, String>() }
+    val uncategorizedLabel = stringResource(R.string.uncategorized)
+    val categoryDisplay = remember(expensesByCategory, allCategories, uncategorizedLabel) {
+        expensesByCategory.map { (name, amount) ->
+            val resolvedName = if (name.isEmpty()) uncategorizedLabel else name
+            resolvedName to amount
+        }.sortedByDescending { it.second }
     }
 
     val chartColors = listOf(
@@ -148,7 +158,7 @@ fun DashboardScreen(viewModel: MainViewModel) {
                 }
             }
 
-            if (expensesByCategory.isNotEmpty()) {
+            if (categoryDisplay.isNotEmpty()) {
                 item {
                     Card(modifier = Modifier.fillMaxWidth(), shape = MaterialTheme.shapes.large) {
                         Column(modifier = Modifier.padding(24.dp)) {
@@ -158,9 +168,9 @@ fun DashboardScreen(viewModel: MainViewModel) {
                                 Box(modifier = Modifier.size(120.dp), contentAlignment = Alignment.Center) {
                                     Canvas(modifier = Modifier.size(120.dp)) {
                                         var startAngle = -90f
-                                        val total = expensesByCategory.sumOf { it.second.toFloat() }
+                                        val total = categoryDisplay.sumOf { it.second.toDouble() }.toFloat()
 
-                                        expensesByCategory.forEachIndexed { index, (_, amount) ->
+                                        categoryDisplay.forEachIndexed { index, (_, amount) ->
                                             val sweepAngle = (amount.toFloat() / total) * 360f
                                             drawArc(
                                                 color = chartColors[index % chartColors.size],
@@ -175,7 +185,7 @@ fun DashboardScreen(viewModel: MainViewModel) {
                                         }
                                     }
                                     Text(
-                                        text = "${expensesByCategory.size}",
+                                        text = "${categoryDisplay.size}",
                                         style = MaterialTheme.typography.headlineMedium,
                                         fontWeight = FontWeight.Bold,
                                         color = MaterialTheme.colorScheme.primary
@@ -185,7 +195,7 @@ fun DashboardScreen(viewModel: MainViewModel) {
                                 Spacer(modifier = Modifier.width(24.dp))
 
                                 Column {
-                                    expensesByCategory.take(4).forEachIndexed { index, (cat, amount) ->
+                                    categoryDisplay.take(4).forEachIndexed { index, (cat, amount) ->
                                         Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(vertical = 4.dp)) {
                                             Surface(color = chartColors[index % chartColors.size], shape = androidx.compose.foundation.shape.CircleShape, modifier = Modifier.size(12.dp)) {}
                                             Spacer(modifier = Modifier.width(8.dp))
