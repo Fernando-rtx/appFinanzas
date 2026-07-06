@@ -1,6 +1,5 @@
 {
   "name": "Mis Finanzas",
   "description": "App para organizar gastos mensuales",
-  "requestFramePermissions": [],
-  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+  "requestFramePermissions": []
 }
