@@ -16,6 +16,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.example.ui.components.SectionHeader
 import com.example.util.centsToCurrency
 import com.example.util.toCentsOrNull
 import com.example.viewmodel.MainViewModel
@@ -51,7 +52,7 @@ fun SettingsScreen(viewModel: MainViewModel) {
                         .fillMaxWidth()
                         .padding(16.dp),
                     colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.4f)),
-                    shape = androidx.compose.foundation.shape.RoundedCornerShape(24.dp)
+                    shape = MaterialTheme.shapes.large
                 ) {
                     Column(
                         modifier = Modifier.fillMaxWidth().padding(24.dp),
@@ -80,12 +81,7 @@ fun SettingsScreen(viewModel: MainViewModel) {
             }
 
             item {
-                Text(
-                    text = "L\u00edmites Presupuestales",
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold,
-                    modifier = Modifier.padding(16.dp)
-                )
+                SectionHeader("L\u00edmites Presupuestales")
             }
             item {
                 Card(modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp)) {
@@ -122,12 +118,7 @@ fun SettingsScreen(viewModel: MainViewModel) {
             }
 
             item {
-                Text(
-                    text = "Cuentas Bancarias y Efectivo",
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold,
-                    modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 24.dp, bottom = 8.dp)
-                )
+                SectionHeader("Cuentas Bancarias y Efectivo")
             }
 
             item {
@@ -178,12 +169,7 @@ fun SettingsScreen(viewModel: MainViewModel) {
             }
 
             item {
-                Text(
-                    text = "Categor\u00edas",
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold,
-                    modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 24.dp, bottom = 8.dp)
-                )
+                SectionHeader("Categor\u00edas")
             }
 
             item {

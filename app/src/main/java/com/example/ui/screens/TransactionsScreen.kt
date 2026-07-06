@@ -9,6 +9,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.example.ui.components.TransactionRow
 import com.example.util.centsToCurrency
 import com.example.viewmodel.MainViewModel
 import java.text.SimpleDateFormat
@@ -28,18 +29,11 @@ fun TransactionsScreen(viewModel: MainViewModel) {
 
         LazyColumn {
             items(allTransactions, key = { it.id }) { txn ->
-                ListItem(
-                    headlineContent = { Text(txn.description) },
-                    supportingContent = { Text(dateTimeFormat.format(Date(txn.date))) },
-                    trailingContent = {
-                        Text(
-                            text = (if(txn.isExpense) "-" else "+") + txn.amount.centsToCurrency(),
-                            color = if (txn.isExpense) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary,
-                            fontWeight = FontWeight.Bold
-                        )
-                    }
+                TransactionRow(
+                    txn = txn,
+                    dateFormatted = dateTimeFormat.format(Date(txn.date)),
+                    showDivider = true
                 )
-                HorizontalDivider()
             }
             if (allTransactions.isEmpty()) {
                 item {

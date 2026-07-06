@@ -3,8 +3,7 @@ package com.example.ui.screens
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.RoundedCornerShape
+// Shape via MaterialTheme.shapes.large
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
@@ -21,6 +20,8 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.example.ui.components.SectionHeader
+import com.example.ui.components.TransactionRow
 import com.example.util.centsToCurrency
 import com.example.viewmodel.MainViewModel
 import java.text.SimpleDateFormat
@@ -28,9 +29,8 @@ import java.util.Calendar
 import java.util.Date
 import java.util.Locale
 
-// Formateadores cacheados (no recrear en cada recomposición)
+// Formateador cacheado para fechas cortas
 private val dateFormatShort = SimpleDateFormat("dd MMM", Locale.getDefault())
-private val dateFormatMonth = SimpleDateFormat("MMMM yyyy", Locale("es", "MX"))
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -113,14 +113,9 @@ fun DashboardScreen(viewModel: MainViewModel) {
             }
         )
 
-        val globalIncome = allTransactions.filter { !it.isExpense }.sumOf { it.amount }
-        val globalExpense = allTransactions.filter { it.isExpense }.sumOf { it.amount }
-        val baseAccounts = allAccounts.sumOf { it.initialBalance }
-        val saldoTotal = baseAccounts + globalIncome - globalExpense
-
         LazyColumn(contentPadding = PaddingValues(16.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
             item {
-                Card(modifier = Modifier.fillMaxWidth(), shape = RoundedCornerShape(24.dp), colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)) {
+                Card(modifier = Modifier.fillMaxWidth(), shape = MaterialTheme.shapes.large, colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)) {
                     Column(modifier = Modifier.padding(24.dp)) {
                         Text("Saldo Real Total", style = MaterialTheme.typography.titleMedium)
                         Text(saldoTotal.centsToCurrency(), style = MaterialTheme.typography.displaySmall, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary)
@@ -130,7 +125,7 @@ fun DashboardScreen(viewModel: MainViewModel) {
             }
 
             item {
-                Card(modifier = Modifier.fillMaxWidth(), shape = RoundedCornerShape(24.dp), colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer)) {
+                Card(modifier = Modifier.fillMaxWidth(), shape = MaterialTheme.shapes.large, colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer)) {
                     Column(modifier = Modifier.padding(24.dp)) {
                         Text("Presupuesto del mes", style = MaterialTheme.typography.titleMedium)
                         Text(monthlyLimit.centsToCurrency(), style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Bold)
@@ -153,7 +148,7 @@ fun DashboardScreen(viewModel: MainViewModel) {
 
             if (expensesByCategory.isNotEmpty()) {
                 item {
-                    Card(modifier = Modifier.fillMaxWidth(), shape = RoundedCornerShape(24.dp)) {
+                    Card(modifier = Modifier.fillMaxWidth(), shape = MaterialTheme.shapes.large) {
                         Column(modifier = Modifier.padding(24.dp)) {
                             Text("Distribuci\u00f3n de Gastos (Mes)", style = MaterialTheme.typography.titleMedium, modifier = Modifier.padding(bottom = 24.dp))
 
@@ -206,7 +201,7 @@ fun DashboardScreen(viewModel: MainViewModel) {
             }
 
             item {
-                Card(modifier = Modifier.fillMaxWidth(), shape = RoundedCornerShape(24.dp), colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.tertiaryContainer)) {
+                Card(modifier = Modifier.fillMaxWidth(), shape = MaterialTheme.shapes.large, colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.tertiaryContainer)) {
                     Column(modifier = Modifier.padding(24.dp)) {
                         Text("L\u00edmite Diario Recomendado", style = MaterialTheme.typography.titleMedium)
                         Text(dailyLimit.centsToCurrency(), style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Bold)
@@ -216,30 +211,22 @@ fun DashboardScreen(viewModel: MainViewModel) {
             }
 
             item {
-                Text("\u00daltimos movimientos", style = MaterialTheme.typography.titleMedium, modifier = Modifier.padding(top = 8.dp, start = 8.dp))
+                SectionHeader("\u00daltimos movimientos")
             }
 
             item {
-                Card(shape = RoundedCornerShape(24.dp)) {
+                Card(shape = MaterialTheme.shapes.large) {
                     Column {
                         if (monthlyTransactions.isEmpty()) {
                             Text("A\u00fan no tienes movimientos este mes", modifier = Modifier.padding(24.dp), color = MaterialTheme.colorScheme.onSurfaceVariant)
                         } else {
-                            monthlyTransactions.take(5).forEachIndexed { index, txn ->
-                                ListItem(
-                                    headlineContent = { Text(txn.description, fontWeight = FontWeight.Medium) },
-                                    supportingContent = { Text(dateFormatShort.format(Date(txn.date))) },
-                                    trailingContent = {
-                                        Text(
-                                            text = (if(txn.isExpense) "-" else "+") + txn.amount.centsToCurrency(),
-                                            color = if (txn.isExpense) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary,
-                                            fontWeight = FontWeight.Bold
-                                        )
-                                    }
+                            val lastFive = monthlyTransactions.take(5)
+                            lastFive.forEachIndexed { index, txn ->
+                                TransactionRow(
+                                    txn = txn,
+                                    dateFormatted = dateFormatShort.format(Date(txn.date)),
+                                    showDivider = index < lastFive.size - 1
                                 )
-                                if (index < monthlyTransactions.take(5).size - 1) {
-                                    HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
-                                }
                             }
                         }
                     }
