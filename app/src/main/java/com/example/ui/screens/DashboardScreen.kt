@@ -21,6 +21,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.example.R
 import com.example.ui.components.SectionHeader
 import com.example.ui.components.TransactionRow
 import com.example.util.centsToCurrency
@@ -87,7 +88,7 @@ fun DashboardScreen(viewModel: MainViewModel) {
             title = {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Icon(
-                        painter = painterResource(id = com.example.R.drawable.ic_app_logo),
+                        painter = painterResource(id = R.drawable.ic_app_logo),
                         contentDescription = stringResource(R.string.cd_logo),
                         tint = Color.Unspecified,
                         modifier = Modifier

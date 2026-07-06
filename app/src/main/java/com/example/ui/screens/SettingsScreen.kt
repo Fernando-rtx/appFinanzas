@@ -17,6 +17,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.example.R
 import com.example.ui.components.SectionHeader
 import com.example.util.centsToCurrency
 import com.example.util.toCentsOrNull
@@ -60,7 +61,7 @@ fun SettingsScreen(viewModel: MainViewModel) {
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
                         Icon(
-                            painter = painterResource(id = com.example.R.drawable.ic_app_logo),
+                            painter = painterResource(id = R.drawable.ic_app_logo),
                             contentDescription = stringResource(R.string.cd_logo),
                             tint = Color.Unspecified,
                             modifier = Modifier.size(80.dp)

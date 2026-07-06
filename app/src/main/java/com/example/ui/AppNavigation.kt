@@ -21,6 +21,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.example.R
 import com.example.viewmodel.MainViewModel
 import com.example.ui.screens.DashboardScreen
 import com.example.ui.screens.TransactionsScreen
