@@ -10,6 +10,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -38,7 +39,7 @@ fun AddTransactionScreen(viewModel: MainViewModel, onBack: () -> Unit) {
             when (event) {
                 is Event.TransactionSaved -> {
                     isSaving = false
-                    Toast.makeText(context, "Movimiento guardado", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, context.getString(R.string.add_txn_saved), Toast.LENGTH_SHORT).show()
                     onBack()
                 }
                 is Event.Error -> {
@@ -67,14 +68,14 @@ fun AddTransactionScreen(viewModel: MainViewModel, onBack: () -> Unit) {
         }
     }
 
-    val categoryText = filteredCategories.find { it.id == selectedCategoryId }?.name ?: "Selecciona una categor\u00eda"
+    val categoryText = filteredCategories.find { it.id == selectedCategoryId }?.name ?: stringResource(R.string.add_txn_select_category)
 
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Registrar Movimiento") },
+                title = { Text(stringResource(R.string.add_txn_title)) },
                 navigationIcon = {
-                    IconButton(onClick = onBack) { Icon(Icons.Default.ArrowBack, contentDescription = "Atr\u00e1s") }
+                    IconButton(onClick = onBack) { Icon(Icons.Default.ArrowBack, contentDescription = stringResource(R.string.back)) }
                 }
             )
         }
@@ -87,14 +88,14 @@ fun AddTransactionScreen(viewModel: MainViewModel, onBack: () -> Unit) {
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.fillMaxWidth()) {
-                FilterChip(selected = isExpense, onClick = { isExpense = true }, label = { Text("Gasto") })
-                FilterChip(selected = !isExpense, onClick = { isExpense = false }, label = { Text("Ingreso") })
+                FilterChip(selected = isExpense, onClick = { isExpense = true }, label = { Text(stringResource(R.string.add_txn_expense)) })
+                FilterChip(selected = !isExpense, onClick = { isExpense = false }, label = { Text(stringResource(R.string.add_txn_income)) })
             }
 
             OutlinedTextField(
                 value = amount,
                 onValueChange = { amount = it },
-                label = { Text("Monto") },
+                label = { Text(stringResource(R.string.add_txn_amount)) },
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                 modifier = Modifier.fillMaxWidth()
             )
@@ -102,7 +103,7 @@ fun AddTransactionScreen(viewModel: MainViewModel, onBack: () -> Unit) {
             OutlinedTextField(
                 value = description,
                 onValueChange = { description = it },
-                label = { Text("Descripci\u00f3n (ej. Comida en restaurante)") },
+                label = { Text(stringResource(R.string.add_txn_description_hint)) },
                 modifier = Modifier.fillMaxWidth()
             )
 
@@ -113,7 +114,7 @@ fun AddTransactionScreen(viewModel: MainViewModel, onBack: () -> Unit) {
                 OutlinedTextField(
                     value = categoryText,
                     onValueChange = { },
-                    label = { Text("Categor\u00eda") },
+                    label = { Text(stringResource(R.string.add_txn_category)) },
                     readOnly = true,
                     modifier = Modifier.menuAnchor().fillMaxWidth(),
                     trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expandedCategory) }
@@ -124,7 +125,7 @@ fun AddTransactionScreen(viewModel: MainViewModel, onBack: () -> Unit) {
                 ) {
                     if (filteredCategories.isEmpty()) {
                         DropdownMenuItem(
-                            text = { Text("No hay categor\u00edas configuradas") },
+                            text = { Text(stringResource(R.string.add_txn_no_categories)) },
                             onClick = { expandedCategory = false }
                         )
                     } else {
@@ -142,7 +143,7 @@ fun AddTransactionScreen(viewModel: MainViewModel, onBack: () -> Unit) {
             }
 
             if (accounts.isNotEmpty()) {
-                Text("Seleccionar cuenta:")
+                Text(stringResource(R.string.add_txn_select_account))
                 Column {
                     accounts.forEach { acc ->
                         Row(verticalAlignment = Alignment.CenterVertically) {
@@ -152,7 +153,7 @@ fun AddTransactionScreen(viewModel: MainViewModel, onBack: () -> Unit) {
                     }
                 }
             } else {
-                Text("No hay cuentas creadas, ve a Ajustes o Cuentas para crear una.")
+                Text(stringResource(R.string.add_txn_no_accounts))
             }
 
             Spacer(modifier = Modifier.weight(1f))
@@ -164,16 +165,16 @@ fun AddTransactionScreen(viewModel: MainViewModel, onBack: () -> Unit) {
                         isSaving = true
                         viewModel.addTransaction(amountCents, description, selectedAccountId!!, isExpense, selectedCategoryId!!)
                     } else {
-                        val msg = if (selectedAccountId == null) "Crea una cuenta en Ajustes primero"
-                            else if (selectedCategoryId == null) "Selecciona una categor\u00eda v\u00e1lida"
-                            else "Llena todos los campos"
+                    val msg = if (selectedAccountId == null) context.getString(R.string.add_txn_error_account)
+                        else if (selectedCategoryId == null) context.getString(R.string.add_txn_error_category)
+                        else context.getString(R.string.add_txn_error_fill)
                         Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
                     }
                 },
                 modifier = Modifier.fillMaxWidth(),
                 enabled = !isSaving
             ) {
-                Text(if (isSaving) "Guardando..." else "Guardar Movimiento")
+                Text(if (isSaving) stringResource(R.string.saving) else stringResource(R.string.add_txn_save))
             }
         }
     }

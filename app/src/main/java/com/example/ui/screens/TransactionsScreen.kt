@@ -6,6 +6,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -25,7 +26,7 @@ fun TransactionsScreen(viewModel: MainViewModel) {
     val allTransactions by viewModel.allTransactions.collectAsStateWithLifecycle()
 
     Column(modifier = Modifier.fillMaxSize()) {
-        TopAppBar(title = { Text("Historial de Movimientos") })
+        TopAppBar(title = { Text(stringResource(R.string.transactions_title)) })
 
         LazyColumn {
             items(allTransactions, key = { it.id }) { txn ->
@@ -37,7 +38,7 @@ fun TransactionsScreen(viewModel: MainViewModel) {
             }
             if (allTransactions.isEmpty()) {
                 item {
-                    Text("No hay movimientos registrados", modifier = Modifier.padding(16.dp))
+                    Text(stringResource(R.string.transactions_empty), modifier = Modifier.padding(16.dp))
                 }
             }
         }

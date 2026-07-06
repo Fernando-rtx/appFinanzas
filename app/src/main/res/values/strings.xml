@@ -1,3 +1,73 @@
 <resources>
+    <!-- General -->
     <string name="app_name">Mis Finanzas</string>
+    <string name="back">Atr\u00e1s</string>
+    <string name="add">A\u00f1adir</string>
+    <string name="saving">Guardando...</string>
+    <string name="error_prefix">Error al guardar: %s</string>
+    <string name="uncategorized">Sin categor\u00eda</string>
+
+    <!-- Dashboard -->
+    <string name="dashboard_title">Resumen General</string>
+    <string name="dashboard_saldo_total">Saldo Real Total</string>
+    <string name="dashboard_saldo_subtitle">Cuentas + Ingresos - Gastos</string>
+    <string name="dashboard_budget_title">Presupuesto del mes</string>
+    <string name="dashboard_expenses">Gastos</string>
+    <string name="dashboard_remaining">Restante</string>
+    <string name="dashboard_chart_title">Distribuci\u00f3n de Gastos (Mes)</string>
+    <string name="dashboard_daily_limit">L\u00edmite Diario Recomendado</string>
+    <string name="dashboard_daily_limit_desc">Para que tu dinero rinda todo el mes</string>
+    <string name="dashboard_recent_txns">\u00daltimos movimientos</string>
+    <string name="dashboard_no_txns">A\u00fan no tienes movimientos este mes</string>
+
+    <!-- Transactions -->
+    <string name="transactions_title">Historial de Movimientos</string>
+    <string name="transactions_empty">No hay movimientos registrados</string>
+
+    <!-- Add Transaction -->
+    <string name="add_txn_title">Registrar Movimiento</string>
+    <string name="add_txn_expense">Gasto</string>
+    <string name="add_txn_income">Ingreso</string>
+    <string name="add_txn_amount">Monto</string>
+    <string name="add_txn_description_hint">Descripci\u00f3n (ej. Comida en restaurante)</string>
+    <string name="add_txn_category">Categor\u00eda</string>
+    <string name="add_txn_select_category">Selecciona una categor\u00eda</string>
+    <string name="add_txn_no_categories">No hay categor\u00edas configuradas</string>
+    <string name="add_txn_no_accounts">No hay cuentas creadas, ve a Ajustes o Cuentas para crear una.</string>
+    <string name="add_txn_select_account">Seleccionar cuenta:</string>
+    <string name="add_txn_save">Guardar Movimiento</string>
+    <string name="add_txn_saved">Movimiento guardado</string>
+    <string name="add_txn_error_fill">Llena todos los campos</string>
+    <string name="add_txn_error_category">Selecciona una categor\u00eda v\u00e1lida</string>
+    <string name="add_txn_error_account">Crea una cuenta en Ajustes primero</string>
+
+    <!-- Settings -->
+    <string name="settings_title">Ajustes</string>
+    <string name="settings_subtitle">Control Inteligente</string>
+    <string name="settings_budget_limits">L\u00edmites Presupuestales</string>
+    <string name="settings_monthly_limit">L\u00edmite Mensual ($)</string>
+    <string name="settings_daily_limit">L\u00edmite Diario Personalizado ($)</string>
+    <string name="settings_daily_limit_hint">Si el l\u00edmite diario es 0, se calcular\u00e1 dividiendo lo que te resta del mes entre los d\u00edas del mes.</string>
+    <string name="settings_accounts_title">Cuentas Bancarias y Efectivo</string>
+    <string name="settings_add_account">A\u00f1adir nueva cuenta</string>
+    <string name="settings_account_name_hint">Nombre (ej. BBVA, Efectivo)</string>
+    <string name="settings_initial_balance">Saldo Inicial</string>
+    <string name="settings_initial_balance_label">Monto inicial: %s</string>
+    <string name="settings_categories_title">Categor\u00edas</string>
+    <string name="settings_create_category">Crear nueva categor\u00eda</string>
+    <string name="settings_category_name">Nombre</string>
+    <string name="settings_my_expenses">Mis Gastos</string>
+    <string name="settings_my_income">Mis Ingresos</string>
+    <string name="settings_delete">Eliminar</string>
+
+    <!-- Navigation -->
+    <string name="nav_home">Inicio</string>
+    <string name="nav_transactions">Movimientos</string>
+    <string name="nav_settings">Ajustes</string>
+    <string name="nav_add_expense">A\u00f1adir gasto</string>
+    <string name="nav_prev_month">Mes anterior</string>
+    <string name="nav_next_month">Mes siguiente</string>
+
+    <!-- Content descriptions -->
+    <string name="cd_logo">Logo de Mis Finanzas</string>
 </resources>

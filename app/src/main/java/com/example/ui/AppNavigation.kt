@@ -16,6 +16,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
@@ -39,20 +40,20 @@ fun MainAppScreen(viewModel: MainViewModel) {
                     NavigationBarItem(
                         selected = currentRoute == "dashboard",
                         onClick = { navController.navigate("dashboard") { launchSingleTop = true; restoreState = true } },
-                        icon = { Icon(Icons.Default.Home, contentDescription = "Inicio") },
-                        label = { Text("Inicio") }
+                        icon = { Icon(Icons.Default.Home, contentDescription = stringResource(R.string.nav_home)) },
+                        label = { Text(stringResource(R.string.nav_home)) }
                     )
                     NavigationBarItem(
                         selected = currentRoute == "transactions",
                         onClick = { navController.navigate("transactions") { launchSingleTop = true; restoreState = true } },
-                        icon = { Icon(Icons.Default.List, contentDescription = "Movimientos") },
-                        label = { Text("Movimientos") }
+                        icon = { Icon(Icons.Default.List, contentDescription = stringResource(R.string.nav_transactions)) },
+                        label = { Text(stringResource(R.string.nav_transactions)) }
                     )
                     NavigationBarItem(
                         selected = currentRoute == "settings",
                         onClick = { navController.navigate("settings") { launchSingleTop = true; restoreState = true } },
-                        icon = { Icon(Icons.Default.Settings, contentDescription = "Ajustes") },
-                        label = { Text("Ajustes") }
+                        icon = { Icon(Icons.Default.Settings, contentDescription = stringResource(R.string.nav_settings)) },
+                        label = { Text(stringResource(R.string.nav_settings)) }
                     )
                 }
             }
@@ -61,7 +62,7 @@ fun MainAppScreen(viewModel: MainViewModel) {
         floatingActionButton = {
             if (currentRoute == "dashboard") {
                 FloatingActionButton(onClick = { navController.navigate("add_transaction") }) {
-                    Icon(Icons.Default.Add, contentDescription = "Añadir gasto")
+                    Icon(Icons.Default.Add, contentDescription = stringResource(R.string.nav_add_expense))
                 }
             }
         }

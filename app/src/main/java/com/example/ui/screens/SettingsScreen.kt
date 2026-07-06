@@ -12,6 +12,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
@@ -40,7 +41,7 @@ fun SettingsScreen(viewModel: MainViewModel) {
     var newAccountBalance by remember { mutableStateOf("") }
 
     Scaffold(
-        topBar = { TopAppBar(title = { Text("Ajustes") }) }
+        topBar = { TopAppBar(title = { Text(stringResource(R.string.settings_title)) }) }
     ) { innerPadding ->
         LazyColumn(
             contentPadding = innerPadding,
@@ -60,19 +61,19 @@ fun SettingsScreen(viewModel: MainViewModel) {
                     ) {
                         Icon(
                             painter = painterResource(id = com.example.R.drawable.ic_app_logo),
-                            contentDescription = "Logo de Mis Finanzas",
+                            contentDescription = stringResource(R.string.cd_logo),
                             tint = Color.Unspecified,
                             modifier = Modifier.size(80.dp)
                         )
                         Spacer(modifier = Modifier.height(12.dp))
                         Text(
-                            text = "Mis Finanzas",
+                            text = stringResource(R.string.app_name),
                             style = MaterialTheme.typography.titleLarge,
                             fontWeight = FontWeight.Bold,
                             color = MaterialTheme.colorScheme.primary
                         )
                         Text(
-                            text = "Control Inteligente",
+                            text = stringResource(R.string.settings_subtitle),
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
@@ -93,7 +94,7 @@ fun SettingsScreen(viewModel: MainViewModel) {
                                 val parsed = it.toCentsOrNull() ?: 0L
                                 viewModel.updateMonthlyLimit(parsed)
                             },
-                            label = { Text("L\u00edmite Mensual (\$)") },
+                            label = { Text(stringResource(R.string.settings_monthly_limit)) },
                             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                             modifier = Modifier.fillMaxWidth()
                         )
@@ -104,12 +105,12 @@ fun SettingsScreen(viewModel: MainViewModel) {
                                 val parsed = it.toCentsOrNull() ?: 0L
                                 viewModel.updateDailyLimit(parsed)
                             },
-                            label = { Text("L\u00edmite Diario Personalizado (\$)") },
+                            label = { Text(stringResource(R.string.settings_daily_limit)) },
                             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                             modifier = Modifier.fillMaxWidth()
                         )
                         Text(
-                            text = "Si el l\u00edmite diario es 0, se calcular\u00e1 dividiendo lo que te resta del mes entre los d\u00edas del mes.",
+                            text = stringResource(R.string.settings_daily_limit_hint),
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
@@ -124,18 +125,18 @@ fun SettingsScreen(viewModel: MainViewModel) {
             item {
                 Card(modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp)) {
                     Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                        Text("A\u00f1adir nueva cuenta")
+                        Text(stringResource(R.string.settings_add_account))
                         OutlinedTextField(
                             value = newAccountName,
                             onValueChange = { newAccountName = it },
-                            label = { Text("Nombre (ej. BBVA, Efectivo)") },
+                            label = { Text(stringResource(R.string.settings_account_name_hint)) },
                             modifier = Modifier.fillMaxWidth()
                         )
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             OutlinedTextField(
                                 value = newAccountBalance,
                                 onValueChange = { newAccountBalance = it },
-                                label = { Text("Saldo Inicial") },
+                                label = { Text(stringResource(R.string.settings_initial_balance)) },
                                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                                 modifier = Modifier.weight(1f)
                             )
@@ -148,7 +149,7 @@ fun SettingsScreen(viewModel: MainViewModel) {
                                     newAccountBalance = ""
                                 }
                             }) {
-                                Text("A\u00f1adir")
+                                Text(stringResource(R.string.add))
                             }
                         }
                     }
@@ -158,10 +159,10 @@ fun SettingsScreen(viewModel: MainViewModel) {
             items(allAccounts, key = { it.id }) { acc ->
                 ListItem(
                     headlineContent = { Text(acc.name) },
-                    supportingContent = { Text("Monto inicial: ${acc.initialBalance.centsToCurrency()}") },
+                    supportingContent = { Text(stringResource(R.string.settings_initial_balance_label, acc.initialBalance.centsToCurrency())) },
                     trailingContent = {
                         IconButton(onClick = { viewModel.deleteAccount(acc.id) }) {
-                            Icon(Icons.Default.Delete, contentDescription = "Eliminar", tint = MaterialTheme.colorScheme.error)
+                            Icon(Icons.Default.Delete, contentDescription = stringResource(R.string.settings_delete), tint = MaterialTheme.colorScheme.error)
                         }
                     }
                 )
@@ -175,16 +176,16 @@ fun SettingsScreen(viewModel: MainViewModel) {
             item {
                 Card(modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp)) {
                     Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                        Text("Crear nueva categor\u00eda")
+                        Text(stringResource(R.string.settings_create_category))
                         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                            FilterChip(selected = isExpenseCategory, onClick = { isExpenseCategory = true }, label = { Text("Gasto") })
-                            FilterChip(selected = !isExpenseCategory, onClick = { isExpenseCategory = false }, label = { Text("Ingreso") })
+                            FilterChip(selected = isExpenseCategory, onClick = { isExpenseCategory = true }, label = { Text(stringResource(R.string.add_txn_expense)) })
+                            FilterChip(selected = !isExpenseCategory, onClick = { isExpenseCategory = false }, label = { Text(stringResource(R.string.add_txn_income)) })
                         }
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             OutlinedTextField(
                                 value = newCategoryName,
                                 onValueChange = { newCategoryName = it },
-                                label = { Text("Nombre") },
+                                label = { Text(stringResource(R.string.settings_category_name)) },
                                 modifier = Modifier.weight(1f)
                             )
                             Spacer(modifier = Modifier.width(8.dp))
@@ -194,7 +195,7 @@ fun SettingsScreen(viewModel: MainViewModel) {
                                     newCategoryName = ""
                                 }
                             }) {
-                                Text("A\u00f1adir")
+                                Text(stringResource(R.string.add))
                             }
                         }
                     }
@@ -203,14 +204,14 @@ fun SettingsScreen(viewModel: MainViewModel) {
 
             item {
                 Spacer(Modifier.height(16.dp))
-                Text("Mis Gastos", modifier = Modifier.padding(horizontal = 16.dp), color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.Bold)
+                Text(stringResource(R.string.settings_my_expenses), modifier = Modifier.padding(horizontal = 16.dp), color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.Bold)
             }
             items(categories.filter { it.isExpense }, key = { it.id }) { cat ->
                 ListItem(
                     headlineContent = { Text(cat.name) },
                     trailingContent = {
                         IconButton(onClick = { viewModel.deleteCategory(cat.id) }) {
-                            Icon(Icons.Default.Delete, contentDescription = "Eliminar", tint = MaterialTheme.colorScheme.error)
+                            Icon(Icons.Default.Delete, contentDescription = stringResource(R.string.settings_delete), tint = MaterialTheme.colorScheme.error)
                         }
                     }
                 )
@@ -219,14 +220,14 @@ fun SettingsScreen(viewModel: MainViewModel) {
 
             item {
                 Spacer(Modifier.height(16.dp))
-                Text("Mis Ingresos", modifier = Modifier.padding(horizontal = 16.dp), color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.Bold)
+                Text(stringResource(R.string.settings_my_income), modifier = Modifier.padding(horizontal = 16.dp), color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.Bold)
             }
             items(categories.filter { !it.isExpense }, key = { it.id }) { cat ->
                 ListItem(
                     headlineContent = { Text(cat.name) },
                     trailingContent = {
                         IconButton(onClick = { viewModel.deleteCategory(cat.id) }) {
-                            Icon(Icons.Default.Delete, contentDescription = "Eliminar", tint = MaterialTheme.colorScheme.error)
+                            Icon(Icons.Default.Delete, contentDescription = stringResource(R.string.settings_delete), tint = MaterialTheme.colorScheme.error)
                         }
                     }
                 )

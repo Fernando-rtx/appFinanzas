@@ -8,6 +8,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.data.Transaction
 import com.example.util.centsToCurrency
@@ -37,5 +38,24 @@ fun TransactionRow(
     )
     if (showDivider) {
         HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun TransactionRowPreview() {
+    MaterialTheme {
+        TransactionRow(
+            txn = Transaction(
+                id = 1,
+                amount = 1999L,
+                date = System.currentTimeMillis(),
+                description = "Comida en restaurante",
+                categoryId = 1,
+                accountId = 1,
+                isExpense = true
+            ),
+            dateFormatted = "05 Jul"
+        )
     }
 }

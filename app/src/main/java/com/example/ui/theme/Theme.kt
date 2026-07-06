@@ -10,6 +10,8 @@ import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 
 private val DarkColorScheme =
   darkColorScheme(
@@ -44,8 +46,7 @@ private val LightColorScheme =
 @Composable
 fun MyApplicationTheme(
   darkTheme: Boolean = isSystemInDarkTheme(),
-  // Dynamic color is available on Android 12+
-  dynamicColor: Boolean = true,
+  dynamicColor: Boolean = false,
   content: @Composable () -> Unit,
 ) {
   val colorScheme =
@@ -60,4 +61,17 @@ fun MyApplicationTheme(
     }
 
   MaterialTheme(colorScheme = colorScheme, typography = Typography, shapes = AppShapes, content = content)
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun ThemePreview() {
+    MyApplicationTheme {
+        androidx.compose.material3.Text(
+            text = "Mis Finanzas",
+            style = androidx.compose.material3.MaterialTheme.typography.headlineMedium,
+            fontWeight = FontWeight.Bold,
+            color = androidx.compose.material3.MaterialTheme.colorScheme.primary
+        )
+    }
 }

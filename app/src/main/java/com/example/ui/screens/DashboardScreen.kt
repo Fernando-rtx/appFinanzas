@@ -17,6 +17,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -69,7 +70,7 @@ fun DashboardScreen(viewModel: MainViewModel) {
             .filter { it.isExpense }
             .groupBy { it.categoryId }
             .map { (catId, txns) ->
-                val catName = allCategories.find { it.id == catId }?.name ?: "Sin categor\u00eda"
+                val catName = allCategories.find { it.id == catId }?.name ?: stringResource(R.string.uncategorized)
                 catName to txns.sumOf { it.amount }
             }
             .sortedByDescending { it.second }
@@ -87,13 +88,13 @@ fun DashboardScreen(viewModel: MainViewModel) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Icon(
                         painter = painterResource(id = com.example.R.drawable.ic_app_logo),
-                        contentDescription = "Logo de Mis Finanzas",
+                        contentDescription = stringResource(R.string.cd_logo),
                         tint = Color.Unspecified,
                         modifier = Modifier
                             .size(36.dp)
                             .padding(end = 8.dp)
                     )
-                    Text("Resumen General", fontWeight = FontWeight.Bold)
+                    Text(stringResource(R.string.dashboard_title), fontWeight = FontWeight.Bold)
                 }
             },
             actions = {
@@ -104,10 +105,10 @@ fun DashboardScreen(viewModel: MainViewModel) {
                         fontWeight = FontWeight.Medium
                     )
                     IconButton(onClick = { viewModel.previousMonth() }) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Mes anterior")
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(R.string.nav_prev_month))
                     }
                     IconButton(onClick = { viewModel.nextMonth() }) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowForward, contentDescription = "Mes siguiente")
+                        Icon(Icons.AutoMirrored.Filled.ArrowForward, contentDescription = stringResource(R.string.nav_next_month))
                     }
                 }
             }
@@ -117,9 +118,9 @@ fun DashboardScreen(viewModel: MainViewModel) {
             item {
                 Card(modifier = Modifier.fillMaxWidth(), shape = MaterialTheme.shapes.large, colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)) {
                     Column(modifier = Modifier.padding(24.dp)) {
-                        Text("Saldo Real Total", style = MaterialTheme.typography.titleMedium)
+                        Text(stringResource(R.string.dashboard_saldo_total), style = MaterialTheme.typography.titleMedium)
                         Text(saldoTotal.centsToCurrency(), style = MaterialTheme.typography.displaySmall, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary)
-                        Text("Cuentas + Ingresos - Gastos", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                        Text(stringResource(R.string.dashboard_saldo_subtitle), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                     }
                 }
             }
@@ -127,18 +128,18 @@ fun DashboardScreen(viewModel: MainViewModel) {
             item {
                 Card(modifier = Modifier.fillMaxWidth(), shape = MaterialTheme.shapes.large, colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer)) {
                     Column(modifier = Modifier.padding(24.dp)) {
-                        Text("Presupuesto del mes", style = MaterialTheme.typography.titleMedium)
+                        Text(stringResource(R.string.dashboard_budget_title), style = MaterialTheme.typography.titleMedium)
                         Text(monthlyLimit.centsToCurrency(), style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Bold)
 
                         Spacer(modifier = Modifier.height(24.dp))
 
                         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
                             Column {
-                                Text("Gastos", style = MaterialTheme.typography.bodySmall)
+                                Text(stringResource(R.string.dashboard_expenses), style = MaterialTheme.typography.bodySmall)
                                 Text("-" + totalSpent.centsToCurrency(), color = MaterialTheme.colorScheme.error, fontWeight = FontWeight.Medium)
                             }
                             Column {
-                                Text("Restante", style = MaterialTheme.typography.bodySmall)
+                                Text(stringResource(R.string.dashboard_remaining), style = MaterialTheme.typography.bodySmall)
                                 Text(remainingBudget.centsToCurrency(), color = if (remainingBudget > 0L) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.error, fontWeight = FontWeight.Bold)
                             }
                         }
@@ -150,7 +151,7 @@ fun DashboardScreen(viewModel: MainViewModel) {
                 item {
                     Card(modifier = Modifier.fillMaxWidth(), shape = MaterialTheme.shapes.large) {
                         Column(modifier = Modifier.padding(24.dp)) {
-                            Text("Distribuci\u00f3n de Gastos (Mes)", style = MaterialTheme.typography.titleMedium, modifier = Modifier.padding(bottom = 24.dp))
+                            Text(stringResource(R.string.dashboard_chart_title), style = MaterialTheme.typography.titleMedium, modifier = Modifier.padding(bottom = 24.dp))
 
                             Row(verticalAlignment = Alignment.CenterVertically) {
                                 Box(modifier = Modifier.size(120.dp), contentAlignment = Alignment.Center) {
@@ -203,22 +204,22 @@ fun DashboardScreen(viewModel: MainViewModel) {
             item {
                 Card(modifier = Modifier.fillMaxWidth(), shape = MaterialTheme.shapes.large, colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.tertiaryContainer)) {
                     Column(modifier = Modifier.padding(24.dp)) {
-                        Text("L\u00edmite Diario Recomendado", style = MaterialTheme.typography.titleMedium)
+                        Text(stringResource(R.string.dashboard_daily_limit), style = MaterialTheme.typography.titleMedium)
                         Text(dailyLimit.centsToCurrency(), style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Bold)
-                        Text("Para que tu dinero rinda todo el mes", style = MaterialTheme.typography.bodySmall)
+                        Text(stringResource(R.string.dashboard_daily_limit_desc), style = MaterialTheme.typography.bodySmall)
                     }
                 }
             }
 
             item {
-                SectionHeader("\u00daltimos movimientos")
+                SectionHeader(stringResource(R.string.dashboard_recent_txns))
             }
 
             item {
                 Card(shape = MaterialTheme.shapes.large) {
                     Column {
                         if (monthlyTransactions.isEmpty()) {
-                            Text("A\u00fan no tienes movimientos este mes", modifier = Modifier.padding(24.dp), color = MaterialTheme.colorScheme.onSurfaceVariant)
+                            Text(stringResource(R.string.dashboard_no_txns), modifier = Modifier.padding(24.dp), color = MaterialTheme.colorScheme.onSurfaceVariant)
                         } else {
                             val lastFive = monthlyTransactions.take(5)
                             lastFive.forEachIndexed { index, txn ->
