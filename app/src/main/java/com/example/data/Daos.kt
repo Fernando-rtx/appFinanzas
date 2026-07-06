@@ -12,7 +12,7 @@ interface AccountDao {
     fun getAllAccounts(): Flow<List<Account>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertAccount(account: Account)
+    suspend fun insertAccount(account: Account): Long
 
     @Query("DELETE FROM account WHERE id = :id")
     suspend fun deleteAccountById(id: Int)
@@ -24,7 +24,7 @@ interface CategoryDao {
     fun getAllCategories(): Flow<List<Category>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertCategory(category: Category)
+    suspend fun insertCategory(category: Category): Long
 
     @Query("SELECT * FROM category WHERE name = :name LIMIT 1")
     suspend fun getCategoryByName(name: String): Category?
@@ -42,5 +42,5 @@ interface TransactionDao {
     fun getTransactionsByMonth(startDate: Long, endDate: Long): Flow<List<Transaction>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertTransaction(transaction: Transaction)
+    suspend fun insertTransaction(transaction: Transaction): Long
 }

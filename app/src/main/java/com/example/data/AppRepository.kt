@@ -15,20 +15,19 @@ class AppRepository(
         return transactionDao.getTransactionsByMonth(startDate, endDate)
     }
 
-    suspend fun insertAccount(account: Account) = accountDao.insertAccount(account)
+    suspend fun insertAccount(account: Account): Long = accountDao.insertAccount(account)
     suspend fun deleteAccountById(id: Int) = accountDao.deleteAccountById(id)
 
-    suspend fun insertCategory(category: Category) = categoryDao.insertCategory(category)
+    suspend fun insertCategory(category: Category): Long = categoryDao.insertCategory(category)
     suspend fun deleteCategoryById(id: Int) = categoryDao.deleteCategoryById(id)
 
-    suspend fun insertTransaction(transaction: Transaction) = transactionDao.insertTransaction(transaction)
+    suspend fun insertTransaction(transaction: Transaction): Long = transactionDao.insertTransaction(transaction)
 
     suspend fun getOrCreateCategory(name: String, isExpense: Boolean): Category {
         val existing = categoryDao.getCategoryByName(name)
         if (existing != null) return existing
-        
-        val newCat = Category(name = name, isExpense = isExpense)
-        categoryDao.insertCategory(newCat)
-        return categoryDao.getCategoryByName(name) ?: newCat
+
+        val newId = categoryDao.insertCategory(Category(name = name, isExpense = isExpense))
+        return Category(id = newId.toInt(), name = name, isExpense = isExpense)
     }
 }

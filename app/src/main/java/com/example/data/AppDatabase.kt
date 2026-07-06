@@ -3,7 +3,7 @@ package com.example.data
 import androidx.room.Database
 import androidx.room.RoomDatabase
 
-@Database(entities = [Account::class, Category::class, Transaction::class], version = 1, exportSchema = false)
+@Database(entities = [Account::class, Category::class, Transaction::class], version = 2, exportSchema = true)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun accountDao(): AccountDao
     abstract fun categoryDao(): CategoryDao

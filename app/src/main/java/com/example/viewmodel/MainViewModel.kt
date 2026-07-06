@@ -9,11 +9,12 @@ import com.example.data.Account
 import com.example.data.AppDatabase
 import com.example.data.AppRepository
 import com.example.data.Transaction
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import java.util.Calendar
@@ -22,26 +23,27 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     private val db = Room.databaseBuilder(
         application,
         AppDatabase::class.java, "finanzas-db"
-    ).build()
+    ).fallbackToDestructiveMigration().build()
 
     private val repository = AppRepository(db.accountDao(), db.categoryDao(), db.transactionDao())
 
     private val sharedPrefs = application.getSharedPreferences("finanzas_prefs", Context.MODE_PRIVATE)
 
-    private val _monthlyLimit = MutableStateFlow(sharedPrefs.getFloat("monthly_limit", 0f).toDouble())
-    val monthlyLimit: StateFlow<Double> = _monthlyLimit
+    private val _monthlyLimit = MutableStateFlow(sharedPrefs.getLong("monthly_limit", 0L))
+    val monthlyLimit: StateFlow<Long> = _monthlyLimit
 
-    private val _dailyLimit = MutableStateFlow(sharedPrefs.getFloat("daily_limit", 0f).toDouble())
-    val dailyLimit: StateFlow<Double> = _dailyLimit
+    private val _dailyLimit = MutableStateFlow(sharedPrefs.getLong("daily_limit", 0L))
+    val dailyLimit: StateFlow<Long> = _dailyLimit
 
     private val _monthYear = MutableStateFlow(getCurrentMonthStartEnd())
-    
+
     val allAccounts = repository.allAccounts.stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5000),
         initialValue = emptyList()
     )
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     val currentMonthTransactions = _monthYear.flatMapLatest { (start, end) ->
         repository.getTransactionsByMonth(start, end)
     }.stateIn(
@@ -49,7 +51,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         started = SharingStarted.WhileSubscribed(5000),
         initialValue = emptyList()
     )
-    
+
     val allTransactions = repository.allTransactions.stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5000),
@@ -62,13 +64,13 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         initialValue = emptyList()
     )
 
-    fun updateMonthlyLimit(amount: Double) {
-        sharedPrefs.edit().putFloat("monthly_limit", amount.toFloat()).apply()
+    fun updateMonthlyLimit(amount: Long) {
+        sharedPrefs.edit().putLong("monthly_limit", amount).apply()
         _monthlyLimit.value = amount
     }
 
-    fun updateDailyLimit(amount: Double) {
-        sharedPrefs.edit().putFloat("daily_limit", amount.toFloat()).apply()
+    fun updateDailyLimit(amount: Long) {
+        sharedPrefs.edit().putLong("daily_limit", amount).apply()
         _dailyLimit.value = amount
     }
 
@@ -84,13 +86,11 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
-    fun addTransaction(amount: Double, description: String, accountId: Int, isExpense: Boolean, categoryId: Int) {
+    fun addTransaction(amount: Long, description: String, accountId: Int?, isExpense: Boolean, categoryId: Int?) {
         viewModelScope.launch {
-            val currentDate = System.currentTimeMillis()
-            
             val txn = Transaction(
                 amount = amount,
-                date = currentDate,
+                date = System.currentTimeMillis(),
                 description = description,
                 categoryId = categoryId,
                 accountId = accountId,
@@ -100,7 +100,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
-    fun addAccount(name: String, initialBalance: Double) {
+    fun addAccount(name: String, initialBalance: Long) {
         viewModelScope.launch {
             repository.insertAccount(Account(name = name, initialBalance = initialBalance))
         }
@@ -112,6 +112,34 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
+    fun nextMonth() {
+        _monthYear.value = shiftMonth(_monthYear.value, +1)
+    }
+
+    fun previousMonth() {
+        _monthYear.value = shiftMonth(_monthYear.value, -1)
+    }
+
+    fun resetToCurrentMonth() {
+        _monthYear.value = getCurrentMonthStartEnd()
+    }
+
+    private fun shiftMonth(current: Pair<Long, Long>, months: Int): Pair<Long, Long> {
+        val cal = Calendar.getInstance()
+        cal.timeInMillis = current.first
+        cal.add(Calendar.MONTH, months)
+        cal.set(Calendar.DAY_OF_MONTH, 1)
+        cal.set(Calendar.HOUR_OF_DAY, 0)
+        cal.set(Calendar.MINUTE, 0)
+        cal.set(Calendar.SECOND, 0)
+        cal.set(Calendar.MILLISECOND, 0)
+        val start = cal.timeInMillis
+        cal.add(Calendar.MONTH, 1)
+        cal.add(Calendar.MILLISECOND, -1)
+        val end = cal.timeInMillis
+        return Pair(start, end)
+    }
+
     private fun getCurrentMonthStartEnd(): Pair<Long, Long> {
         val calendar = Calendar.getInstance()
         calendar.set(Calendar.DAY_OF_MONTH, 1)
@@ -120,21 +148,24 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         calendar.set(Calendar.SECOND, 0)
         calendar.set(Calendar.MILLISECOND, 0)
         val start = calendar.timeInMillis
-        
+
         calendar.add(Calendar.MONTH, 1)
         calendar.add(Calendar.MILLISECOND, -1)
         val end = calendar.timeInMillis
         return Pair(start, end)
     }
 
-    // Initialize with a default account if empty
     init {
         viewModelScope.launch {
-            allAccounts.collect { accounts ->
-                if (accounts.isEmpty()) {
-                    addAccount("Efectivo", 0.0)
-                }
+            val accounts = repository.allAccounts.first()
+            if (accounts.isEmpty()) {
+                repository.insertAccount(Account(name = "Efectivo", initialBalance = 0L))
             }
         }
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        db.close()
     }
 }

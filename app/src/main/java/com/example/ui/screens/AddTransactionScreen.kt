@@ -13,6 +13,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.example.util.toCentsOrNull
 import com.example.viewmodel.MainViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -24,30 +25,38 @@ fun AddTransactionScreen(viewModel: MainViewModel, onBack: () -> Unit) {
     var amount by remember { mutableStateOf("") }
     var description by remember { mutableStateOf("") }
     var isExpense by remember { mutableStateOf(true) }
-    var selectedCategoryId by remember { mutableStateOf(-1) }
-    var selectedAccountId by remember { mutableStateOf(accounts.firstOrNull()?.id ?: -1) }
-    
+    var selectedCategoryId by remember { mutableStateOf<Int?>(null) }
+    var selectedAccountId by remember { mutableStateOf<Int?>(null) }
+
     var isSaving by remember { mutableStateOf(false) }
     var expandedCategory by remember { mutableStateOf(false) }
 
     val filteredCategories = remember(allCategories, isExpense) {
         allCategories.filter { it.isExpense == isExpense }
     }
-    
-    LaunchedEffect(filteredCategories) {
-        if (filteredCategories.none { it.id == selectedCategoryId }) {
-            selectedCategoryId = filteredCategories.firstOrNull()?.id ?: -1
+
+    // Resetear cuenta seleccionada cuando las cuentas cargan por primera vez
+    LaunchedEffect(accounts) {
+        if (selectedAccountId == null && accounts.isNotEmpty()) {
+            selectedAccountId = accounts.first().id
         }
     }
 
-    val categoryText = filteredCategories.find { it.id == selectedCategoryId }?.name ?: "Selecciona una categoría"
+    // Resetear categoría seleccionada cuando cambia el filtro gasto/ingreso
+    LaunchedEffect(filteredCategories) {
+        if (filteredCategories.isNotEmpty() && filteredCategories.none { it.id == selectedCategoryId }) {
+            selectedCategoryId = filteredCategories.first().id
+        }
+    }
+
+    val categoryText = filteredCategories.find { it.id == selectedCategoryId }?.name ?: "Selecciona una categor\u00eda"
 
     Scaffold(
         topBar = {
             TopAppBar(
                 title = { Text("Registrar Movimiento") },
                 navigationIcon = {
-                    IconButton(onClick = onBack) { Icon(Icons.Default.ArrowBack, contentDescription = "Atrás") }
+                    IconButton(onClick = onBack) { Icon(Icons.Default.ArrowBack, contentDescription = "Atr\u00e1s") }
                 }
             )
         }
@@ -75,7 +84,7 @@ fun AddTransactionScreen(viewModel: MainViewModel, onBack: () -> Unit) {
             OutlinedTextField(
                 value = description,
                 onValueChange = { description = it },
-                label = { Text("Descripción (ej. Comida en restaurante)") },
+                label = { Text("Descripci\u00f3n (ej. Comida en restaurante)") },
                 modifier = Modifier.fillMaxWidth()
             )
 
@@ -86,7 +95,7 @@ fun AddTransactionScreen(viewModel: MainViewModel, onBack: () -> Unit) {
                 OutlinedTextField(
                     value = categoryText,
                     onValueChange = { },
-                    label = { Text("Categoría") },
+                    label = { Text("Categor\u00eda") },
                     readOnly = true,
                     modifier = Modifier.menuAnchor().fillMaxWidth(),
                     trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expandedCategory) }
@@ -97,7 +106,7 @@ fun AddTransactionScreen(viewModel: MainViewModel, onBack: () -> Unit) {
                 ) {
                     if (filteredCategories.isEmpty()) {
                         DropdownMenuItem(
-                            text = { Text("No hay categorías configuradas") },
+                            text = { Text("No hay categor\u00edas configuradas") },
                             onClick = { expandedCategory = false }
                         )
                     } else {
@@ -132,14 +141,16 @@ fun AddTransactionScreen(viewModel: MainViewModel, onBack: () -> Unit) {
 
             Button(
                 onClick = {
-                    val amountVal = amount.toDoubleOrNull()
-                    if (amountVal != null && amountVal > 0 && description.isNotEmpty() && selectedAccountId != -1 && selectedCategoryId != -1) {
+                    val amountCents = amount.toCentsOrNull()
+                    if (amountCents != null && amountCents > 0L && description.isNotEmpty() && selectedAccountId != null && selectedCategoryId != null) {
                         isSaving = true
-                        viewModel.addTransaction(amountVal, description, selectedAccountId, isExpense, selectedCategoryId)
+                        viewModel.addTransaction(amountCents, description, selectedAccountId!!, isExpense, selectedCategoryId!!)
                         Toast.makeText(context, "Movimiento guardado", Toast.LENGTH_SHORT).show()
                         onBack()
                     } else {
-                        val msg = if (selectedCategoryId == -1) "Asegúrate de crear categorías en Ajustes" else "Llena todos los campos"
+                        val msg = if (selectedAccountId == null) "Crea una cuenta en Ajustes primero"
+                            else if (selectedCategoryId == null) "Selecciona una categor\u00eda v\u00e1lida"
+                            else "Llena todos los campos"
                         Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
                     }
                 },
