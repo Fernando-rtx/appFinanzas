@@ -28,6 +28,10 @@ import java.util.Calendar
 import java.util.Date
 import java.util.Locale
 
+// Formateadores cacheados (no recrear en cada recomposición)
+private val dateFormatShort = SimpleDateFormat("dd MMM", Locale.getDefault())
+private val dateFormatMonth = SimpleDateFormat("MMMM yyyy", Locale("es", "MX"))
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DashboardScreen(viewModel: MainViewModel) {
@@ -39,26 +43,37 @@ fun DashboardScreen(viewModel: MainViewModel) {
     val allCategories by viewModel.allCategories.collectAsStateWithLifecycle()
     val currentMonthLabel by viewModel.currentMonthLabel.collectAsStateWithLifecycle()
 
-    val totalSpent = monthlyTransactions.filter { it.isExpense }.sumOf { it.amount }
-    val totalIncome = monthlyTransactions.filter { !it.isExpense }.sumOf { it.amount }
+    // Cálculos cacheados con remember para evitar recomposiciones innecesarias
+    val totalSpent = remember(monthlyTransactions) { monthlyTransactions.filter { it.isExpense }.sumOf { it.amount } }
+    val totalIncome = remember(monthlyTransactions) { monthlyTransactions.filter { !it.isExpense }.sumOf { it.amount } }
 
-    val remainingBudget = monthlyLimit + totalIncome - totalSpent
+    val remainingBudget = remember(monthlyLimit, totalIncome, totalSpent) { monthlyLimit + totalIncome - totalSpent }
 
-    val calendar = Calendar.getInstance()
-    val daysInMonth = calendar.getActualMaximum(Calendar.DAY_OF_MONTH)
-    val currentDay = calendar.get(Calendar.DAY_OF_MONTH)
-    val daysLeft = daysInMonth - currentDay + 1
-    val dailyLimit = dailyLimitCfg.takeIf { it > 0L } ?: (if (daysLeft > 0 && remainingBudget > 0L) remainingBudget / daysLeft else 0L)
+    val dailyLimit = remember(dailyLimitCfg, remainingBudget) {
+        val calendar = Calendar.getInstance()
+        val daysInMonth = calendar.getActualMaximum(Calendar.DAY_OF_MONTH)
+        val currentDay = calendar.get(Calendar.DAY_OF_MONTH)
+        val daysLeft = daysInMonth - currentDay + 1
+        dailyLimitCfg.takeIf { it > 0L } ?: (if (daysLeft > 0 && remainingBudget > 0L) remainingBudget / daysLeft else 0L)
+    }
+
+    // Datos globales
+    val globalIncome = remember(allTransactions) { allTransactions.filter { !it.isExpense }.sumOf { it.amount } }
+    val globalExpense = remember(allTransactions) { allTransactions.filter { it.isExpense }.sumOf { it.amount } }
+    val baseAccounts = remember(allAccounts) { allAccounts.sumOf { it.initialBalance } }
+    val saldoTotal = remember(baseAccounts, globalIncome, globalExpense) { baseAccounts + globalIncome - globalExpense }
 
     // Chart Data Preparation
-    val expensesByCategory = monthlyTransactions
-        .filter { it.isExpense }
-        .groupBy { it.categoryId }
-        .map { (catId, txns) ->
-            val catName = allCategories.find { it.id == catId }?.name ?: "Sin categor\u00eda"
-            catName to txns.sumOf { it.amount }
-        }
-        .sortedByDescending { it.second }
+    val expensesByCategory = remember(monthlyTransactions, allCategories) {
+        monthlyTransactions
+            .filter { it.isExpense }
+            .groupBy { it.categoryId }
+            .map { (catId, txns) ->
+                val catName = allCategories.find { it.id == catId }?.name ?: "Sin categor\u00eda"
+                catName to txns.sumOf { it.amount }
+            }
+            .sortedByDescending { it.second }
+    }
 
     val chartColors = listOf(
         Color(0xFF4CAF50), Color(0xFF66BB6A), Color(0xFF81C784),
@@ -213,7 +228,7 @@ fun DashboardScreen(viewModel: MainViewModel) {
                             monthlyTransactions.take(5).forEachIndexed { index, txn ->
                                 ListItem(
                                     headlineContent = { Text(txn.description, fontWeight = FontWeight.Medium) },
-                                    supportingContent = { Text(SimpleDateFormat("dd MMM", Locale.getDefault()).format(Date(txn.date))) },
+                                    supportingContent = { Text(dateFormatShort.format(Date(txn.date))) },
                                     trailingContent = {
                                         Text(
                                             text = (if(txn.isExpense) "-" else "+") + txn.amount.centsToCurrency(),

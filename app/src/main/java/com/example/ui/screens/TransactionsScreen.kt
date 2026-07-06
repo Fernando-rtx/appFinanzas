@@ -15,6 +15,9 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
+// Formateador cacheado
+private val dateTimeFormat = SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault())
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TransactionsScreen(viewModel: MainViewModel) {
@@ -27,7 +30,7 @@ fun TransactionsScreen(viewModel: MainViewModel) {
             items(allTransactions, key = { it.id }) { txn ->
                 ListItem(
                     headlineContent = { Text(txn.description) },
-                    supportingContent = { Text(SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault()).format(Date(txn.date))) },
+                    supportingContent = { Text(dateTimeFormat.format(Date(txn.date))) },
                     trailingContent = {
                         Text(
                             text = (if(txn.isExpense) "-" else "+") + txn.amount.centsToCurrency(),
