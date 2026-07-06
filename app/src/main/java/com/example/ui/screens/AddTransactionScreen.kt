@@ -14,6 +14,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.util.toCentsOrNull
+import com.example.viewmodel.Event
 import com.example.viewmodel.MainViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -30,6 +31,23 @@ fun AddTransactionScreen(viewModel: MainViewModel, onBack: () -> Unit) {
 
     var isSaving by remember { mutableStateOf(false) }
     var expandedCategory by remember { mutableStateOf(false) }
+
+    // Escuchar eventos del ViewModel
+    LaunchedEffect(Unit) {
+        viewModel.events.collect { event ->
+            when (event) {
+                is Event.TransactionSaved -> {
+                    isSaving = false
+                    Toast.makeText(context, "Movimiento guardado", Toast.LENGTH_SHORT).show()
+                    onBack()
+                }
+                is Event.Error -> {
+                    isSaving = false
+                    Toast.makeText(context, event.message, Toast.LENGTH_LONG).show()
+                }
+            }
+        }
+    }
 
     val filteredCategories = remember(allCategories, isExpense) {
         allCategories.filter { it.isExpense == isExpense }
@@ -145,8 +163,6 @@ fun AddTransactionScreen(viewModel: MainViewModel, onBack: () -> Unit) {
                     if (amountCents != null && amountCents > 0L && description.isNotEmpty() && selectedAccountId != null && selectedCategoryId != null) {
                         isSaving = true
                         viewModel.addTransaction(amountCents, description, selectedAccountId!!, isExpense, selectedCategoryId!!)
-                        Toast.makeText(context, "Movimiento guardado", Toast.LENGTH_SHORT).show()
-                        onBack()
                     } else {
                         val msg = if (selectedAccountId == null) "Crea una cuenta en Ajustes primero"
                             else if (selectedCategoryId == null) "Selecciona una categor\u00eda v\u00e1lida"

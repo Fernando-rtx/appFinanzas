@@ -5,6 +5,9 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -34,6 +37,7 @@ fun DashboardScreen(viewModel: MainViewModel) {
     val allTransactions by viewModel.allTransactions.collectAsStateWithLifecycle()
     val allAccounts by viewModel.allAccounts.collectAsStateWithLifecycle()
     val allCategories by viewModel.allCategories.collectAsStateWithLifecycle()
+    val currentMonthLabel by viewModel.currentMonthLabel.collectAsStateWithLifecycle()
 
     val totalSpent = monthlyTransactions.filter { it.isExpense }.sumOf { it.amount }
     val totalIncome = monthlyTransactions.filter { !it.isExpense }.sumOf { it.amount }
@@ -75,6 +79,21 @@ fun DashboardScreen(viewModel: MainViewModel) {
                             .padding(end = 8.dp)
                     )
                     Text("Resumen General", fontWeight = FontWeight.Bold)
+                }
+            },
+            actions = {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(
+                        text = currentMonthLabel.replaceFirstChar { it.uppercase() },
+                        style = MaterialTheme.typography.bodyLarge,
+                        fontWeight = FontWeight.Medium
+                    )
+                    IconButton(onClick = { viewModel.previousMonth() }) {
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Mes anterior")
+                    }
+                    IconButton(onClick = { viewModel.nextMonth() }) {
+                        Icon(Icons.AutoMirrored.Filled.ArrowForward, contentDescription = "Mes siguiente")
+                    }
                 }
             }
         )

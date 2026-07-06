@@ -10,14 +10,27 @@ import com.example.data.AppDatabase
 import com.example.data.AppRepository
 import com.example.data.Transaction
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import java.text.SimpleDateFormat
 import java.util.Calendar
+import java.util.Date
+import java.util.Locale
+
+// Eventos de UI para comunicación VM -> Screen
+sealed interface Event {
+    data object TransactionSaved : Event
+    data class Error(val message: String) : Event
+}
 
 class MainViewModel(application: Application) : AndroidViewModel(application) {
     private val db = Room.databaseBuilder(
@@ -36,6 +49,13 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     val dailyLimit: StateFlow<Long> = _dailyLimit
 
     private val _monthYear = MutableStateFlow(getCurrentMonthStartEnd())
+
+    private val _events = MutableSharedFlow<Event>()
+    val events: SharedFlow<Event> = _events.asSharedFlow()
+
+    val currentMonthLabel: StateFlow<String> = _monthYear.map { (start, _) ->
+        SimpleDateFormat("MMMM yyyy", Locale("es", "MX")).format(Date(start))
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), "")
 
     val allAccounts = repository.allAccounts.stateIn(
         scope = viewModelScope,
@@ -88,15 +108,20 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     fun addTransaction(amount: Long, description: String, accountId: Int?, isExpense: Boolean, categoryId: Int?) {
         viewModelScope.launch {
-            val txn = Transaction(
-                amount = amount,
-                date = System.currentTimeMillis(),
-                description = description,
-                categoryId = categoryId,
-                accountId = accountId,
-                isExpense = isExpense
-            )
-            repository.insertTransaction(txn)
+            try {
+                val txn = Transaction(
+                    amount = amount,
+                    date = System.currentTimeMillis(),
+                    description = description,
+                    categoryId = categoryId,
+                    accountId = accountId,
+                    isExpense = isExpense
+                )
+                repository.insertTransaction(txn)
+                _events.emit(Event.TransactionSaved)
+            } catch (e: Exception) {
+                _events.emit(Event.Error("Error al guardar: ${e.message}"))
+            }
         }
     }
 
